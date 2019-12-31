@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<b>
+  <title>Users Form</title>
+
+  <body>
+    <div class="info">
+      <h1>USERS FORM</h1>
+      <ul>
+        <h2>Create|Post, Update|Put</h2>
+        <li>
+          To Create New User: enter all info EXCEPT id.
+        </li>
+        <li><b>To Update a existing user: </b> enter all info</li>
+      </ul>
+      <h4>here also Read|Get for single item in the form</h4>
+    </div>
+
+    <button type="button" onclick="location.href = '/usersPage.html'">Back to Users</button>
+
+
+    <div>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>USERID</th>
+            <th>FIRST_NAME</th>
+            <th>LAST_NAME</th>
+            <th>AGE</th>
+            <th>CITY</th>
+            <th>COUNTRY</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+
+
+    <form>
+      <label>ID</label> <input id="id"><br>
+      <label>First Name</label> <input id="firstName"><br>
+      <label>Last Name</label> <input id="lastName"><br>
+      <label>Age</label> <input id="age"><br>
+      <label>City</label> <input id="city"><br>
+      <label>Country</label> <input id="country"><br>
+      <button type="button" onclick="submitty()">Submit</button>
+    </form>
+
+
+
+    <script>
+      function submitty() {
+        let id = document.getElementById("id").value
+        let method = "POST", url = "http://localhost:3000/users"
+        if (id) {
+          method = "PUT"
+          url += "/" + id
+        }
+        let data = {
+          FIRST_NAME: document.getElementById("firstName").value,
+          LAST_NAME: document.getElementById("lastName").value,
+          AGE: parseInt(document.getElementById("age").value),
+          CITY: document.getElementById("city").value,
+          COUNTRY: document.getElementById("country").value
+          //age: document.getElementById("age").value  NOT this cuz age is int
+        }
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function () {
+          if (this.readyState == 4) {
+            alert(`status: ${this.status}, response: ${this.responseText}`)
+          }
+        };
+        x.open(method, url);
+        x.setRequestHeader('Content-Type', 'application/json; charset=utf-8')
+        x.send(JSON.stringify(data));
+      }
+      function getAllUsers() {
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            let u = JSON.parse(this.responseText)
+            document.querySelector('table tbody').innerHTML = '<tr>' +
+              '<td>' + u.USERID + '</td>' +
+              '<td>' + u.FIRST_NAME + '</td>' +
+              '<td>' + u.LAST_NAME + '</td>' +
+              '<td>' + u.AGE + '</td>' +
+              '<td>' + u.CITY + '</td>' +
+              '<td>' + u.COUNTRY + '</td>' +
+              '</tr>';
+          }
+        };
+        let id = location.search.split('=')[1]
+        x.open("GET", "http://localhost:3000/users/" + id);
+        x.send();
+      }
+
+      getAllUsers();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Users Homepage</title>
+
+<body>
+  <div class="info">
+    <h1>SHOW ALL USERS</h1>
+    <h2>here Read|Get, Delete|Delete</h2>
+    <h4>Read|Get for single item in the form</h4>
+    <h2>click and item for Create|Post, Update|Put</h2>
+  </div>
+
+  <div>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>USERID</th>
+          <th>FIRST_NAME</th>
+          <th>LAST_NAME</th>
+          <th>AGE</th>
+          <th>CITY</th>
+          <th>COUNTRY</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <dialog>
+    <p>name</p>
+  </dialog>
+
+  <script>
+    function getAllUsers() {
+      var x = new XMLHttpRequest();
+      x.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          let arr = JSON.parse(this.responseText)
+          let t = document.querySelector('table tbody')
+          arr.forEach(u => {
+            t.innerHTML += '<tr>' +
+              '<td>' + u.USERID + '</td>' +
+              '<td>' + u.FIRST_NAME + '</td>' +
+              '<td>' + u.LAST_NAME + '</td>' +
+              '<td>' + u.AGE + '</td>' +
+              '<td>' + u.CITY + '</td>' +
+              '<td>' + u.COUNTRY + '</td>' +
+              '<td><button onclick="deleteUSR(' + u.USERID + ', event)">Delete User</button></td>' +
+              '</tr>';
+          });
+          setDialogAndClicks()
+        }
+      };
+      x.open("GET", "http://localhost:3000/users");
+      x.send();
+    }
+    getAllUsers();
+
+    setDialogAndClicks = () => {
+      let rows = document.querySelectorAll('table tbody tr')
+      rows.forEach(r => {
+        r.onclick = ev => {
+          getPersonalDataForDialog(r)
+        }
+      })
+    }
+
+    getPersonalDataForDialog = r => {
+      let id = r.querySelector('td').textContent
+      location.href = '/usersForm.html?id=' + id
+    }
+
+    function deleteUSR(id, ev) {
+      ev.stopPropagation()
+      var x = new XMLHttpRequest();
+      x.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          alert(`status: ${this.status}, response: ${this.responseText}`)
+          location.reload();
+        }
+      };
+
+      x.open("DELETE", "http://localhost:3000/users/" + id);
+      //x.setRequestHeader('Content-Type', 'application/json; charset=utf-8')
+      x.send();
+    }
+  </script>
+
+</body>
+
+</html>
